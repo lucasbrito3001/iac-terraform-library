@@ -1,2 +1,13 @@
+# Ignore service account
 gcp_svc_acc.json
-.terraform
+
+# Ignore Terraform state files
+*.tfstate
+*.tfstate.backup
+
+# Ignore .terraform directory
+.terraform/
+
+# Ignore any local Terraform configuration files
+.terraformrc
+terraform.rc
