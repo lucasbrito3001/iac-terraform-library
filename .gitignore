@@ -11,3 +11,6 @@ gcp_svc_acc.json
 # Ignore any local Terraform configuration files
 .terraformrc
 terraform.rc
+
+# Ignore lock file
+.terraform.lock.hcl
