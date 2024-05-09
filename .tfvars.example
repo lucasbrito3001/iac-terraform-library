@@ -1,0 +1,7 @@
+credentials_file       = ""
+project_id             = ""
+subnet_ip_range        = ""
+services_machine_type  = ""
+services_machine_image = ""
+region                 = ""
+zone                   = ""

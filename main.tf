@@ -5,10 +5,15 @@ terraform {
       version = "4.51.0"
     }
   }
+
+  backend "gcs" {
+    bucket = "library-infra-tfstate"
+    credentials = file(var.credentials_file)
+  }
 }
 
 provider "google" {
   project     = var.project_id
   region      = var.region
-  credentials = "./gcp_svc_acc.json"
+  credentials = file(var.credentials_file)
 }

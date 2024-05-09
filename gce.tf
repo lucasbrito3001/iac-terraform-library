@@ -3,9 +3,9 @@
 #   display_name = "Custom SA for VM Instance"
 # }
 
-resource "google_compute_instance" "dev_services_instance" {
+resource "google_compute_instance" "services_instance" {
   count        = 1
-  name         = "dev-services-cluster-vm-${count.index + 1}"
+  name         = "services-cluster-vm-${count.index + 1}"
   machine_type = var.services_machine_type
   zone         = var.zone
   project      = var.project_id
@@ -26,12 +26,14 @@ resource "google_compute_instance" "dev_services_instance" {
 
   network_interface {
     network            = google_compute_network.main_vpc_network.name
-    subnetwork         = google_compute_subnetwork.dev_vpc_subnetwork.name
+    subnetwork         = google_compute_subnetwork.main_vpc_subnetwork.name
     subnetwork_project = var.project_id
   }
 
   metadata_startup_script = <<-EOF
     #!/bin/bash
+    
+    echo "Installing docker.";
 
     # Update the package index
     sudo apt update
@@ -68,5 +70,23 @@ resource "google_compute_instance" "dev_services_instance" {
     sudo systemctl enable docker
 
     echo "Docker has been installed successfully."
+
+    echo "Installing git."
+
+    sudo apt-get install git-all
+
+    echo "Git installed."
+
+    echo "Installing tools."
+    docker 
+
+    sudo mkdir -p /etc/nginx/conf.d
+
+    echo "Starting docker compose."
+
+    sudo docker compose -f ~/tools/docker-compose.yml create
+    sudo docker compose -f ~/tools/docker-compose.yml start
+
+    echo "Docker compose started successfully."
   EOF
 }

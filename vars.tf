@@ -1,23 +1,27 @@
+variable "credentials_file" {
+  type = string
+}
+
 variable "project_id" {
   type = string
 }
 
+variable "subnet_ip_range" {
+  type = string
+}
+
 variable "services_machine_type" {
-  type    = string
-  default = "n2-standard-2"
+  type = string
 }
 
 variable "services_machine_image" {
-  type    = string
-  default = "debian-cloud/debian-11"
+  type = string
 }
 
 variable "region" {
-  type    = string
-  default = "us-east1"
+  type = string
 }
 
 variable "zone" {
-  type    = string
-  default = "us-east1-b"
+  type = string
 }

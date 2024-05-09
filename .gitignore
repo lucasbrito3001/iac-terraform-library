@@ -14,3 +14,9 @@ terraform.rc
 
 # Ignore lock file
 .terraform.lock.hcl
+
+# Ignore tfvars
+*.tfvars
+
+# Env variables
+**/*/.env
