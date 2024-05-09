@@ -36,6 +36,8 @@ jobs:
         if: github.ref == 'refs/heads/dev'
         run: |-
           echo ${{ github.ref_name }}
+          
+          terraform init -reconfigure
           terraform plan -var-file="env.tfvars" -out plans/dev
           terraform apply plans/dev
 

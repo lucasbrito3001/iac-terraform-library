@@ -7,8 +7,9 @@ terraform {
   }
 
   backend "gcs" {
-    bucket = "library-infra-tfstate"
-    credentials = file(var.credentials_file)
+    bucket      = "library-infra-tfstate"
+    prefix      = "tfstate"
+    credentials = "./gcp_svc_acc.json"
   }
 }
 
