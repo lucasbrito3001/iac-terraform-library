@@ -24,13 +24,13 @@ jobs:
         if: github.ref == 'refs/heads/dev'
         run: |-
           echo '${{ secrets.DEV_GCP_SVC_ACC }}' | jq -rc . >> gcp_svc_acc.json
-          echo ${{ secrets.DEV_TFVARS }}  >> env.tfvars
+          echo '${{ secrets.DEV_TFVARS }}'  >> env.tfvars
 
       - name: Set env file
         if: startsWith(github.ref, 'refs/tags/v')
         run: |-
           echo '${{ secrets.PRD_GCP_SVC_ACC }}' | jq -rc . >> gcp_svc_acc.json
-          echo ${{ secrets.PRD_TFVARS }}  >> env.tfvars
+          echo '${{ secrets.PRD_TFVARS }}' >> env.tfvars
 
       - name: Run terraform commands
         if: github.ref == 'refs/heads/dev'
