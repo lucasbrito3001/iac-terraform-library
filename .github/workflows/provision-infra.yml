@@ -23,7 +23,7 @@ jobs:
       - name: Set env file
         if: github.ref == 'refs/heads/dev'
         run: |-
-          echo "${{ secrets.DEV_GCP_SVC_ACC }}" | jq . >> gcp_svc_acc.json
+          echo ${{ secrets.DEV_GCP_SVC_ACC }} | jq . >> gcp_svc_acc.json
           echo "${{ secrets.DEV_TFVARS }}"  >> env.tfvars
 
       - name: Set env file
