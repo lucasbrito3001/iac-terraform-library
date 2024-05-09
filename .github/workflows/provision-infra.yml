@@ -23,16 +23,24 @@ jobs:
       - name: Set env file
         if: github.ref == 'refs/heads/dev'
         run: |-
-          echo "${{ secrets.GCP_SVC_ACC }}" >> gcp_svc_acc.json
-          echo "${{ secrets.DEV_TFVARS }}"  >> def.tfvars
+          echo "${{ secrets.DEV_GCP_SVC_ACC }}" >> gcp_svc_acc.json
+          echo "${{ secrets.DEV_TFVARS }}"  >> env.tfvars
 
       - name: Set env file
         if: startsWith(github.ref, 'refs/tags/v')
         run: |-
-          echo "${{ secrets.GCP_SVC_ACC }}" >> gcp_svc_acc.json
-          echo "${{ secrets.DEV_TFVARS }}"  >> def.tfvars
+          echo "${{ secrets.PRD_GCP_SVC_ACC }}" >> gcp_svc_acc.json
+          echo "${{ secrets.PRD_TFVARS }}"  >> env.tfvars
 
-      - name: Run terraform plan
+      - name: Run terraform commands
+        if: github.ref == 'refs/heads/dev'
         run: |-
-          echo ${{ github.ref }}
-          ls -la
+          echo ${{ github.ref_name }}
+          terraform plan -var-file="env.tfvars" -out plans/dev
+          terraform apply plans/dev
+
+      - name: Run terraform commands
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |-
+          terraform plan -var-file="env.tfvars" -out plans/${{ github.ref_name }}
+          terraform apply plans/${{ github.ref_name }}
