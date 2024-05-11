@@ -4,13 +4,12 @@
 # }
 
 resource "google_compute_instance" "services_instance" {
-  count        = 1
-  name         = "services-cluster-vm-${count.index + 1}"
+  name         = "services-instance"
   machine_type = var.services_machine_type
   zone         = var.zone
   project      = var.project_id
 
-  tags = ["dev-instances", "allow-ssh", "allow-http", "allow-docker-swarm"]
+  tags = ["dev-instances", "allow-ssh", "allow-http"]
 
   boot_disk {
     initialize_params {
@@ -30,63 +29,25 @@ resource "google_compute_instance" "services_instance" {
     subnetwork_project = var.project_id
   }
 
-  metadata_startup_script = <<-EOF
-    #!/bin/bash
-    
-    echo "Installing docker.";
+  metadata_startup_script = file("scripts/start_script.sh")
+}
 
-    # Update the package index
-    sudo apt update
+resource "google_compute_instance_group" "services_instance_group" {
+  name = "services-instance-group"
 
-    # Install dependencies
-    sudo apt install -y \
-        apt-transport-https \
-        ca-certificates \
-        curl \
-        gnupg \
-        lsb-release
+  instances = [
+    google_compute_instance.services_instance.self_link,
+  ]
 
-    # Add Docker’s official GPG key
-    curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+  named_port {
+    name = "http"
+    port = "80"
+  }
 
-    # Set up the stable repository
-    echo \
-      "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian \
-      $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+  named_port {
+    name = "https"
+    port = "443"
+  }
 
-    # Update the package index again
-    sudo apt update
-
-    # Install Docker Engine
-    sudo apt install -y docker-ce docker-ce-cli containerd.io
-
-    # Check Docker version
-    sudo docker --version
-
-    # Add your user to the docker group
-    sudo usermod -aG docker $USER
-
-    # Enable Docker service to start on boot
-    sudo systemctl enable docker
-
-    echo "Docker has been installed successfully."
-
-    echo "Installing git."
-
-    sudo apt-get install git-all
-
-    echo "Git installed."
-
-    echo "Installing tools."
-    docker 
-
-    sudo mkdir -p /etc/nginx/conf.d
-
-    echo "Starting docker compose."
-
-    sudo docker compose -f ~/tools/docker-compose.yml create
-    sudo docker compose -f ~/tools/docker-compose.yml start
-
-    echo "Docker compose started successfully."
-  EOF
+  zone = var.zone
 }

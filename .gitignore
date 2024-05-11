@@ -19,4 +19,4 @@ terraform.rc
 *.tfvars
 
 # Env variables
-**/*/.env
+.env

@@ -64,3 +64,53 @@ resource "google_compute_firewall" "allow_docker_swarm" {
   source_tags = ["allow-docker-swarm"]
   target_tags = ["allow-docker-swarm"]
 }
+
+# reserved IP address
+resource "google_compute_global_address" "l7_lb_static_ip" {
+  name = "l7-lb-static-dip"
+}
+
+# forwarding rule
+resource "google_compute_global_forwarding_rule" "default" {
+  name                  = "l7-xlb-forwarding-rule"
+  ip_protocol           = "TCP"
+  load_balancing_scheme = "EXTERNAL"
+  port_range            = "80"
+  target                = google_compute_target_http_proxy.l7_lb_target_http_proxy.id
+  ip_address            = google_compute_global_address.l7_lb_static_ip.id
+}
+
+# http proxy
+resource "google_compute_target_http_proxy" "l7_lb_target_http_proxy" {
+  name    = "l7-lb-target-http-proxy"
+  url_map = google_compute_url_map.l7_lb_url_map.id
+}
+
+# url map
+resource "google_compute_url_map" "l7_lb_url_map" {
+  name            = "l7-lb-url-map"
+  default_service = google_compute_backend_service.l7_lb_backend_service.id
+}
+
+# backend service with custom request and response headers
+resource "google_compute_backend_service" "l7_lb_backend_service" {
+  name                  = "l7-lb-backend-service"
+  protocol              = "HTTP"
+  load_balancing_scheme = "EXTERNAL"
+  timeout_sec           = 10
+  enable_cdn            = true
+  health_checks         = [google_compute_health_check.l7_lb_hc.id]
+  backend {
+    group           = google_compute_instance_group.services_instance_group.id
+    balancing_mode  = "UTILIZATION"
+    capacity_scaler = 1.0
+  }
+}
+
+# health check
+resource "google_compute_health_check" "l7_lb_hc" {
+  name = "l7-lb-hc"
+  http_health_check {
+    port_specification = "USE_FIXED_PORT"
+  }
+}
