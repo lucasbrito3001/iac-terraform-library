@@ -9,7 +9,7 @@ resource "google_compute_instance" "services_instance" {
   zone         = var.zone
   project      = var.project_id
 
-  tags = ["dev-instances", "allow-ssh", "allow-http"]
+  tags = ["dev-instances", "allow-ssh", "allow-http", "allow-health-checks"]
 
   boot_disk {
     initialize_params {

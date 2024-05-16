@@ -50,6 +50,36 @@ resource "google_compute_firewall" "allow_ssh" {
   target_tags   = ["allow-ssh"]
 }
 
+resource "google_compute_firewall" "allow_http" {
+  name      = "allow-http"
+  project   = var.project_id
+  network   = google_compute_network.main_vpc_network.name
+  direction = "INGRESS"
+
+  allow {
+    protocol = "tcp"
+    ports    = ["80"]
+  }
+
+  source_ranges = [google_compute_global_address.l7_lb_static_ip.address]
+  target_tags   = ["allow-http"]
+}
+
+resource "google_compute_firewall" "allow_health_checks" {
+  name      = "allow-health-checks"
+  project   = var.project_id
+  network   = google_compute_network.main_vpc_network.name
+  direction = "INGRESS"
+
+  allow {
+    protocol = "tcp"
+    ports    = ["80"]
+  }
+
+  source_ranges = ["35.191.0.0/16", "130.211.0.0/22"]
+  target_tags   = ["allow-health-checks"]
+}
+
 resource "google_compute_firewall" "allow_docker_swarm" {
   name      = "allow-docker-swarm"
   project   = var.project_id
