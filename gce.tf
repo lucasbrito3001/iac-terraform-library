@@ -4,23 +4,20 @@
 # }
 
 resource "google_compute_instance" "services_instance" {
-  name         = "services-instance"
-  machine_type = var.services_machine_type
-  zone         = var.zone
-  project      = var.project_id
+  name                      = "services-instance"
+  machine_type              = var.services_machine_type
+  zone                      = var.zone
+  project                   = var.project_id
+  allow_stopping_for_update = true
 
   tags = ["dev-instances", "allow-ssh", "allow-http", "allow-health-checks"]
 
   boot_disk {
     initialize_params {
       image = var.services_machine_image
-      size  = 10
+      size  = 100
+      type  = "pd-ssd"
     }
-  }
-
-  // Local SSD disk
-  scratch_disk {
-    interface = "NVME"
   }
 
   network_interface {
